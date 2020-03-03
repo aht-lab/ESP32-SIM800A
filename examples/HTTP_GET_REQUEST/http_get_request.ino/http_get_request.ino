@@ -67,7 +67,7 @@ void setup()
         Serial.print("IMEI GSM: ");
         Serial.println(IMEI_GSM);
 
-        gsm->getIMEI(IMEI_SIM, 20);
+        gsm->getSimIMEI(IMEI_SIM, 20);
         Serial.print("IMEI SIM: ");
         Serial.println(IMEI_SIM);
     }
