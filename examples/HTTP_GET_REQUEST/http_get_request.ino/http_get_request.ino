@@ -25,7 +25,7 @@ WiFiClient client;
 IPAddress dns(8,8,8,8);
 
 // INET
-#define APN             "internet.wind"
+#define APN             "m3-word"
 #define USER            ""
 #define PASS            ""
 #define HTTP            "http://"

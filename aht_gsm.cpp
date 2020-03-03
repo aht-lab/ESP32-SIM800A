@@ -39,7 +39,7 @@ void AHT_GSM::begin(uint32_t baudrate)
 bool AHT_GSM::begin() 
 {
     int baudrateSize = 2;
-    uint16_t baudrates[] = {9600, 115200};
+    uint32_t baudrates[] = {9600, 115200};
 
     DB_Println("(*)DETECT BAUDRATE");
     for (int i = 0; i < baudrateSize; i++) 
