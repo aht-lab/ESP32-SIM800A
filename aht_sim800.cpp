@@ -354,7 +354,7 @@ char AHT_SIM800::requestGet(const char* server, const char* path, int port, char
     print(" HTTP/1.0\r\nHost: ");
     print(server);
     print("\r\n");
-    print("User-Agent: Arduino");
+    print("User-Agent: ESP32");
     print("\r\n\r\n");
     print(end_c);
     print("\r");

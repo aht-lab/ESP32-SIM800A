@@ -18,8 +18,8 @@ bool gsmOk = false;
 #include <HTTPClient.h>
 #include <ArduinoJson.h>
 
-#define SSID "AN BINH"
-#define PASS "anbinhbio..com"
+#define SSID "AHT LAB"
+#define PASS "0941732379"
 
 WiFiClient client;
 IPAddress dns(8,8,8,8);
