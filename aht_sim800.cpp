@@ -325,7 +325,7 @@ char AHT_SIM800::connectTCP(const char* server, int port)
     print(port);
     print("\"\r");
 
-    if(readUntil(8000, "CONNECT OK") != AT_REPLY_FOUND)
+    if(readUntil(8000, "OK") != AT_REPLY_FOUND)
     {
         return 0;
     }
