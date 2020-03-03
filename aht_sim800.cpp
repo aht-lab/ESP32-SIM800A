@@ -283,7 +283,8 @@ char AHT_SIM800::sendSMS(const char* phone, const char* content)
 char AHT_SIM800::attackGPRS(const char* domain, const char* user, const char* pass)
 {
     sendAndReadResponse("AT+CIPSHUT", 2000);
-    if(sendAndCheckReply("AT+CGATT=1", "OK", 3000, 3) != AT_REPLY_FOUND)
+    sendAndReadResponse("AT+CGACT?", 2000);
+    if(sendAndCheckReply("AT+CGATT=1", "OK", 8000, 3) != AT_REPLY_FOUND)
     {
         return 0;
     }
@@ -301,7 +302,7 @@ char AHT_SIM800::attackGPRS(const char* domain, const char* user, const char* pa
         return 0;
     }
 
-    if(sendAndCheckReply("AT+CIICR", "OK", 3000, 2) != AT_REPLY_FOUND)
+    if(sendAndCheckReply("AT+CIICR", "OK", 7000, 2) != AT_REPLY_FOUND)
     {
         return 0;
     }
@@ -325,10 +326,11 @@ char AHT_SIM800::connectTCP(const char* server, int port)
     print(port);
     print("\"\r");
 
-    if(readUntil(8000, "OK") != AT_REPLY_FOUND)
+    if(readUntil(15000, "CONNECT OK") != AT_REPLY_FOUND)
     {
         return 0;
     }
+    delay(500);
     println("AT+CIPSEND");
     return readUntil(5000, ">") == AT_REPLY_FOUND;
 }

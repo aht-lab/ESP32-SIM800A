@@ -25,12 +25,12 @@ WiFiClient client;
 IPAddress dns(8,8,8,8);
 
 // INET
-#define APN             "m3-word"
+#define APN             "internet.wind"
 #define USER            ""
 #define PASS            ""
 #define HTTP            "http://"
 #define HOST            "ibsmanage.com"
-#define PATTERN_ACTIVE  "/Active?IDImeiSim=%s&IDImeiDevice=%s&gen=%s&Device=%s&IDPartner=%d&t=%d"
+#define PATTERN_ACTIVE  "/Active?IDImeiSim=%s&IDImeiDevice=%s&gen=%s&Device=%s&IDPartner=%s&t=0"
 #define BODY_LEN        128
 char body[BODY_LEN];
 
@@ -48,6 +48,8 @@ void setup()
 {
     Serial.begin(115200);
     delay(1000);
+
+    WiFi_Init();
   
     if(gsmMaster->begin()) 
     {
@@ -118,12 +120,11 @@ bool getRequest(const char* host, const char* path)
 
 bool GSM_GetRequest(const char* host, const char* path)
 {
-    int gsmAttackNetworkTime = 0;
-    while(!gsmNet && gsmAttackNetworkTime++ < 5)
+    if(!gsmNet)
     {
         gsmNet = gsm->attackGPRS("internet.wind", "", "");
+        if(!gsmNet) return false;
     }
-    if(!gsmNet) return false;
     
     return gsm->requestGet(host, path, 80, body, BODY_LEN);
 }
@@ -158,4 +159,22 @@ bool WiFi_GetRequest(const char* host, const char* path)
     
     http.end();
     return false;
+}
+
+void WiFi_Init()
+{
+    WiFi.begin(SSID, PASS);
+    int timeConnect = 0;
+    while (WiFi.status() != WL_CONNECTED && timeConnect++ < 20) 
+    {
+        delay(500);
+        Serial.print(".");
+    }
+    if (WiFi.status() != WL_CONNECTED)
+    {
+        Serial.println("WiFi not connected");
+        return;
+    }
+    Serial.println("WiFi connected");
+    WiFi.config(WiFi.localIP(), WiFi.gatewayIP(), WiFi.subnetMask(), dns);
 }
