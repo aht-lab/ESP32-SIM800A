@@ -2,7 +2,7 @@
 **Thư viện hỗ trợ phần cứng [ESP32 GSM](https://ahtlab.com/san-pham/kit-wifi-esp32-gsm-2g-3g/) được thiết kế bởi [AHTLAB.COM](https://ahtlab.com/)**
 ![](https://ahtlab.com/ahtlab/uploads/2019/11/esp32_sim_1-768x576.png)
 ## Các hàm hỗ trợ
- - Tự nhận baudrate, loại GSM (Hiện tại hỗ trợ SIM800, Tương lai SIM5300, UC15)
+ - Tự nhận baudrate, loại GSM (Hiện tại hỗ trợ SIM800, SIM5300, ...)
     ```c++
     // define
     AHT_GSM *gsmMaster = new AHT_GSM(&uart);
@@ -61,7 +61,7 @@
     uint8_t numSMS = gsm->numSMS(SMS_STT_ALL);
 	gsm->readSMS(numSMS);
 	gsm->deleteAllSMS();
-    if(gsm->sendSMS("0946866793", "cafe5hsang@gmail.com - mita9497dev@gmail.com"))
+    if(gsm->sendSMS("0946866793", "info@ahtlab.com - www.ahtlab.com"))
 	{
 		Serial.println("Gui SMS thanh cong");
 	}
