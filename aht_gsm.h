@@ -30,6 +30,12 @@ enum UART_TYPE
     SOFTWARE
 };
 
+typedef struct PHONE_BOOK{
+    uint8_t index;
+    char phone[15];
+    char name[50];
+} PHONE_BOOK;
+
 #define     AT_NO_RESPONSE      -1
 #define     AT_TIMEOUT          -2
 #define     AT_ERROR            -3
@@ -48,6 +54,8 @@ enum UART_TYPE
 
 #define     SMS_READ_FAIL       4
 #define     SMS_READ_SUCCESS    5
+
+#define     BUFFER_SIZE         1024
 
 class AHT_GSM 
 {
@@ -73,12 +81,13 @@ class AHT_GSM
         void        begin     (uint32_t baudrate);
         bool        begin     ();
         GSM_TYPE    detectGSM (const Stream* uart);
+        bool        available ();
 
         // UART 
-        void        print               (int val);
-        void        print               (const char* at);
-        void        println             (const char* at);
-        void        println             (int val);
+        void        print     (int val);
+        void        print     (const char* at);
+        void        println   (const char* at);
+        void        println   (int val);
         
         char        readSegment         (const char* strStop, uint16_t timeout = 1000);
         char        readResponse        (const char* reply, uint8_t line, uint16_t timeout = 1000);
@@ -92,35 +101,49 @@ class AHT_GSM
         char        sendAndCheckReply   (const char* command, const char* reply, uint16_t timeout = 1000, uint8_t timeTry = 1, uint8_t line = 0);
 
         // IMEI
-        virtual bool    getIMEI         (char* imei, int len) {};
-        virtual bool    getSimIMEI      (char* simImei, int len) {};
+        virtual bool    getIMEI         (char* imei) {}
+        virtual bool    getSimIMEI      (char* simImei) {}
         
         // GPS
-        virtual bool    getLocation     (char* lat, char* lng) {};
-        virtual bool    getCellId       (char* cellId, char* lac) {};
+        virtual bool    initLocation    () {}
+        virtual bool    getLocation     (char* lat, char* lng) {}
+        virtual bool    getCellId       (char* cellId, char* lac) {}
 
         // SMS
-        virtual char    numSMS          (byte status) {};
-        virtual char    readSMS         (uint8_t index) {};
-        virtual char    deleteAllSMS    () {};
-        virtual char    sendSMS         (const char* phoneNumber, const char* content) {};
+        virtual char    numSMS          (byte status) {}
+        virtual char    readSMS         (uint8_t index, char* phone, char* msg) {}
+        virtual char    deleteAllSMS    () {}
+        virtual char    deleteSMS       (uint8_t index) {}
+        virtual char    sendSMS         (const char* phoneNumber, const char* content) {}
 
         // CALL
-        virtual char    call            (const char* phone) {};
-        virtual char    handup          () {};
-        virtual char    phoneActiveSTT  () {};
+        virtual bool    setupCall       () {}
+        virtual uint16_t call           (const char* phone, uint16_t timeWait, uint16_t timeCall) {}
+        virtual char    call            (const char* phone) {}
+        virtual char    handup          () {}
+        virtual char    phoneActiveSTT  () {}
+
+        // PHONEBOOK
+        virtual uint8_t readPhoneBook   (PHONE_BOOK* phoneBook, uint8_t from, uint8_t to) {};
+
+        // TIME NTP 
+        virtual bool    setupNTP        (const char* ntpServer = "pool.ntp.org", const byte timezone = 7) {};
+        virtual bool    getTimeNTP      (uint16_t* year, uint16_t* month, uint16_t* day, uint16_t* hour,
+                                        uint16_t* minute, uint16_t* second, uint16_t* timezone) {};
 
         // NETWORK
-        virtual char    attackGPRS      (const char* domain, const char* uname, const char* pword) {};
-        virtual char    dettachGPRS     () {};
-        virtual char    connectTCP      (const char* server, int port) {};
-        virtual char    disconnectTCP   () {};
-        virtual char    requestGet      (const char* server, const char* path, int port, char* body, int len) {};
+        virtual char    attackGPRS      (const char* domain, const char* uname, const char* pword) {}
+        virtual char    dettachGPRS     () {}
+        virtual char    connectTCP      (const char* server, uint16_t port) {}
+        virtual char    disconnectTCP   () {}
+        virtual char    requestGet      (const char* server, const char* path, int port, char* body, int len) {}
+        virtual char    requestPost     (const char* server, const char* path, int port, const char *data, char* body, int len) {}
+        virtual char    startSendTCP    () {};
         
 
     protected:
         Stream*     _uart;
-        char        _buffer[512]    = "";
+        char        _buffer[BUFFER_SIZE]    = "";
         uint32_t    _baudrate       = 9600;
         uint8_t     _bufferLen      = 0;
         GSM_TYPE    gsmType;

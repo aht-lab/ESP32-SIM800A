@@ -1,3 +1,8 @@
+/**
+ * cafe5hsang@gmail.com - mita9497dev@gmail.com
+ * ULTILS
+ */
+
 #ifndef _ULTILS_H__
 #define _ULTILS_H__
 

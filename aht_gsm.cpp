@@ -53,11 +53,15 @@ bool AHT_GSM::begin()
             DB_Println("-Time try: " + String(timeTest));
             if (sendAndCheckReply("AT", "OK"))
             {
+                readResponse(10000);
                 DB_Println(F("=>BAUDRATE OK"));
                 return true;
             }
         }
     }
+
+    // enable echo
+    sendAndReadResponse("ATE1", 1000);
     
     return false;
 }
@@ -114,6 +118,11 @@ void AHT_GSM::println(int val)
     _uart->println(val);
 }
 
+bool AHT_GSM::available()
+{
+    return _uart->available();
+}
+
 char AHT_GSM::WaitForReply(uint16_t timeout)
 {
     uint16_t timeWait = 0;
@@ -141,7 +150,7 @@ char AHT_GSM::readSegment(const char* strStop, uint16_t timeout)
 
         while(_uart->available())
         {
-            if(index > 511)
+            if(index > BUFFER_SIZE - 2)
             { 
                 retVal = SEG_END;
                 break;
@@ -195,7 +204,7 @@ char AHT_GSM::readResponse(uint16_t timeout)
         delay(1);
         if(_uart->available())
         {
-            if (index > 510)
+            if (index > BUFFER_SIZE - 2)
             { 
                 _uart->read();
                 continue;
@@ -250,7 +259,7 @@ char AHT_GSM::readResponse(const char* reply, uint8_t line, uint16_t timeout)
                 continue;
             }
             
-            if(index > 511)
+            if(index > BUFFER_SIZE - 2)
             { 
                 _uart->read();
                 continue;
@@ -331,7 +340,7 @@ char AHT_GSM::readResponse(uint16_t timeout, const char* reply)
             {
                 while(_uart->available())
                 {
-                    if(index > 511)
+                    if(index > BUFFER_SIZE - 2)
                     { 
                         _uart->read();
                     }
@@ -345,7 +354,7 @@ char AHT_GSM::readResponse(uint16_t timeout, const char* reply)
                 continue;
             }
             
-            if(index > 511)
+            if(index > BUFFER_SIZE - 2)
             { 
                 _uart->read();
                 continue;
@@ -365,6 +374,8 @@ char AHT_GSM::readResponse(uint16_t timeout, const char* reply)
             }
         }
     }
+
+    foundReply = strstr(_buffer, reply);
     
     if(foundReply)
     {
@@ -413,13 +424,13 @@ char AHT_GSM::readUntil(uint16_t timeout, const char* reply)
                 break;
             }
             
-            if(index > 511)
+            if(index > BUFFER_SIZE - 2)
             { 
                 _uart->read();
                 continue;
             }            
             char c = _uart->read();
-            if(index == 0 && c == '\n') 
+            if(index == 0 && (c == '\n' || c == '\r'))
             {
                 continue;
             }
@@ -448,6 +459,7 @@ char AHT_GSM::readUntil(uint16_t timeout, const char* reply)
             DB_Println(F("AT_ERROR"));
             retVal = AT_ERROR;
         }
+        DB_Buffer(_bufferLen);
     }
 
     if (retVal != AT_NO_RESPONSE)
@@ -546,7 +558,11 @@ GSM_TYPE AHT_GSM::detectGSM(const Stream* uart)
     {
         DB_Println(F("=>GSM: SIM800A"));
     }
-    else if (strstr(_buffer, "UC15") != nullptr)
+    else if (strstr(_buffer, "SIMCOM_SIM800C") != nullptr)
+    {
+        DB_Println(F("=>GSM: SIM800C"));
+    }
+	else if (strstr(_buffer, "UC15") != nullptr)
     {
         DB_Println(F("=>GSM: UC15"));
     }

@@ -1,5 +1,5 @@
 {
-    "board": "esp8266:esp8266:d1",
-    "configuration": "CpuFrequency=80,VTable=flash,FlashSize=4M1M,LwIPVariant=v2mss536,Debug=Disabled,DebugLevel=None____,FlashErase=none,UploadSpeed=921600",
-    "port": "COM10"
+    "board": "esp32:esp32:esp32",
+    "configuration": "PSRAM=disabled,PartitionScheme=default,CPUFreq=240,FlashMode=qio,FlashFreq=80,FlashSize=4M,UploadSpeed=921600,DebugLevel=none",
+    "port": "COM7"
 }
